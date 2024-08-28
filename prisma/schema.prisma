@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// creating a schema to track runners on a race
+// there will be several races, each with a collection of runners and checkpoints
+// When a runner crosses a checkpoint, we will record the time they crossed it
+// checkpoints will have both a race and a distance
+// each race will have a distance and a collection of checkpoints and a name
+// runners can participate in one or more races
+
+model Race {
+  id          Int        @id @default(autoincrement())
+  name        String
+  distance    Float
+  raceRunners RaceRunner[]
+}
+
+model Runner {
+  id      Int    @id @default(autoincrement())
+  name    String
+  races RaceRunner[]
+}
+
+model RaceRunner {
+  raceId Int
+  runnerId Int
+  race Race @relation(fields: [raceId], references: [id])
+  runner Runner @relation(fields: [runnerId], references: [id])
+
+  @@id([raceId, runnerId])
+}
